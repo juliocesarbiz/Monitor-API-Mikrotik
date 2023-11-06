@@ -103,14 +103,55 @@ def interfaces():
 # -----------------------------------------------------------------------------
 
 def ping():
-    message = [('/ping', '=address=8.8.8.8','=count=5')]
+    message = [('/ping', '=address=1.1.1.1','=count=5')]
     collection = database['rb_ping']
 
     try:
         response = router.talk(message)
+        data_dict = response[0]
 
-      
-        collection.insert_many(response[0])
+        # Converter a lista em um data frame
+        df = pd.DataFrame(data_dict)
+        df["data"] = datetime.now().strftime("%Y-%m-%d")
+        df["hora"] = datetime.now().strftime("%H:%M")
+        df["data-hora"] = datetime.now().isoformat()
+
+        # Converter o data frame em um formato compatível com JSON
+        df_json = df.to_dict(orient='records')
+        
+        print (df_json)
+        collection.insert_many(df_json)
+
+
+        print("bkp Finalizado")
+
+    except router.LoginError(Exception) as e:
+        print(f"Ocorreu um erro na requisição: {e}")
+
+
+# -----------------------------------------------------------------------------
+#
+# -----------------------------------------------------------------------------
+
+def neighbor():
+    message = [('/ip/neighbor','print')]
+    collection = database['rb_neighbors']
+
+    try:
+        response = router.talk('/ip/neighbor/print')
+        # Converter a lista em um data frame
+        df = pd.DataFrame(response)
+        df["data"] = datetime.now().strftime("%Y-%m-%d")
+        df["hora"] = datetime.now().strftime("%H:%M")
+        df["data-hora"] = datetime.now().isoformat()
+
+        # Converter o data frame em um formato compatível com JSON
+        df_json = df.to_dict(orient='records')
+        
+        print (df_json)
+        collection.insert_many(df_json)
+
+
         print("bkp Finalizado")
 
     except router.LoginError(Exception) as e:
@@ -185,12 +226,12 @@ def sytem_status():
 schedule.every(2).seconds.do(sytem_status) 
 schedule.every(1).seconds.do(monitor_traffic)
 schedule.every(20).seconds.do(interfaces)
+schedule.every(30).seconds.do(neighbor)
 schedule.every(60).seconds.do(ping)
 schedule.every(200).seconds.do(route_test)
 
 
 if __name__ == '__main__':
-
     route_test()
     interfaces()
     atualiza_lista_interfaces()
