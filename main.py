@@ -225,10 +225,10 @@ def sytem_status():
 
 schedule.every(2).seconds.do(sytem_status) 
 schedule.every(1).seconds.do(monitor_traffic)
-schedule.every(20).seconds.do(interfaces)
+schedule.every(120).seconds.do(interfaces)
 schedule.every(30).seconds.do(neighbor)
 schedule.every(60).seconds.do(ping)
-schedule.every(200).seconds.do(route_test)
+schedule.every(120).seconds.do(route_test)
 
 
 if __name__ == '__main__':

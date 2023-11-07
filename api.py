@@ -15,10 +15,6 @@ PASSWORD = ''
 
 USE_SSL = False
 
-VERBOSE = False  # Whether to print API conversation width the router. Useful for debugging
-VERBOSE_LOGIC = 'OR'  # Whether to print and save verbose log to file. AND - print and save, OR - do only one.
-VERBOSE_FILE_MODE = 'w'  # Weather to create new file ('w') for log or append to old one ('a').
-
 TIMEOUT = None  # Whether to use timeout for socket connection
 
 CONTEXT = ssl.create_default_context()  # It is possible to predefine context for SSL socket
@@ -45,14 +41,13 @@ class RouterOSTrapError(Exception):
 class Api:
 
     def __init__(self, address, user=USER, password=PASSWORD, use_ssl=USE_SSL, port=False,
-                 verbose=VERBOSE, context=CONTEXT, timeout=TIMEOUT):
+                 context=CONTEXT, timeout=TIMEOUT):
 
         self.address = address
         self.user = user
         self.password = password
         self.use_ssl = use_ssl
         self.port = port
-        self.verbose = verbose
         self.context = context
         self.timeout = timeout
 
