@@ -132,6 +132,27 @@ def ping():
 # -----------------------------------------------------------------------------
 #
 # -----------------------------------------------------------------------------
+def Insert_alert(severity, alert_name, object):
+    collection = database['rb_alerts']
+
+
+    df = pd.DataFrame()
+    df["severity"] = severity
+    df["alert_name"] = alert_name
+    df["object"] = object
+    df["data"] = datetime.now().strftime("%Y-%m-%d")
+    df["hora"] = datetime.now().strftime("%H:%M")
+    df["data-hora"] = datetime.now().isoformat()
+    # Converter o data frame em um formato compatível com JSON
+    df_json = df.to_dict(orient='records')
+        
+    print (df_json)
+    collection.insert_many(df_json)
+
+    return 
+
+
+
 
 def neighbor():
     message = [('/ip/neighbor','print')]
@@ -223,12 +244,18 @@ def sytem_status():
 
 
 
+def monitor():
+    
+    
+    Insert_alert
+    return
+
 schedule.every(2).seconds.do(sytem_status) 
 schedule.every(1).seconds.do(monitor_traffic)
-schedule.every(20).seconds.do(interfaces)
+schedule.every(120).seconds.do(interfaces)
 schedule.every(30).seconds.do(neighbor)
 schedule.every(60).seconds.do(ping)
-schedule.every(200).seconds.do(route_test)
+schedule.every(120).seconds.do(route_test)
 
 
 if __name__ == '__main__':
@@ -237,6 +264,7 @@ if __name__ == '__main__':
     atualiza_lista_interfaces()
     monitor_traffic()
     sytem_status()
+    ping()
 
     while True:
        schedule.run_pending()
